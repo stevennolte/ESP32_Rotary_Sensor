@@ -4,22 +4,23 @@
 #include "Arduino.h"
 #include "AsyncUDP.h"
 #include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
+
 #include "ESPconfig.h"
 
 
-class ESPnetwork{
+// Forward declaration of the GPS class
+
+
+
+class ESPudp{
     public:
         void begin();
         void sendUDP();
-        void updateDebugVars();
-        void handleDebugVars(AsyncWebServerRequest *request);
-        ESPnetwork(ESPconfig* vars);
+        ESPudp(ESPconfig* vars);
     private:
-        std::vector<String> debugVars;
         AsyncUDP udp;
-        AsyncWebServer server;
         ESPconfig* espConfig;
+       
     
 };
 

@@ -9,8 +9,11 @@ class ESPconfig
 {
 public:
     uint8_t loadConfig();
+    uint8_t updateIP();
+    uint8_t updateServer();
+    uint8_t updateSteer();
     uint8_t getStrapping();
-    uint8_t progState;
+
     class GPIO_Definitions{
         public:
             uint8_t LED_PIN = 48;
@@ -26,8 +29,8 @@ public:
 
     class I2C_Definitions{
         public:
-            uint8_t TLE_ADDRESS = 0x22;
-            uint8_t MCP_ADDRESS = 0x20;
+            uint8_t TMAG_ADDRESS = 0x22;
+            uint8_t MCP_ADDRESS = 0x60;
             I2C_Definitions(){}
     };
     I2C_Definitions i2cDefs;
@@ -45,41 +48,52 @@ public:
     };
     ProgramConfig progCfg;
     
+    class ProgramData {
+        public:
+            uint8_t state;
+            uint8_t tmagState;
+            uint8_t dacState;
+            uint8_t steerDriverState;
+            ProgramData(){}
+    };
+    ProgramData progData;
+
     class WifiConfig {
         public:
-            const char* ssids[4];
-            const char* passwords[4];
+            const char* ssids[4] = {"FERT", "SSEI"};
+            const char* passwords[4] = {"Fert504!", "Nd14il!la"};
             uint8_t ips[4];
             uint8_t state;
+            uint8_t apMode;
             WifiConfig(){}
     };
     WifiConfig wifiCfg;
+
 
     class OTAConfig {
         public:
             uint8_t state;
             uint8_t port;
-            uint8_t ipAddr[4];
+            uint8_t ipAddr;
             char basePath[64];
             OTAConfig(){}
     };
     OTAConfig otaCfg;
 
-    class MagConfig {
+    class WasData {
         public:
-            uint8_t sensitivity;
-            MagConfig(){}
+            uint8_t state;
+            uint8_t mode;
+            uint16_t setPoint;
+            uint16_t angle;   // Angle in degrees x 100
+            uint16_t sigReading;
+            float x;
+            float y;
+            float z;
+            float t;
+            WasData(){}
     };
-
-    class MagData {
-        public:
-            double x;
-            double y;
-            double z;
-            double t;
-            MagData(){}
-    };
-    MagData magData;
+    WasData wasData;
 
     ESPconfig(/* args */);
     

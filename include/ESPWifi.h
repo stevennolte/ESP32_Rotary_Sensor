@@ -10,6 +10,7 @@ class ESPWifi
         uint8_t connect();
         uint8_t makeAP();
         void startMonitor();
+        void scanNetworks();
         ESPWifi(ESPconfig* vars);
     
 

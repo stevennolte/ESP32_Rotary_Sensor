@@ -27,10 +27,12 @@ uint8_t ESPWifi::makeAP(){
     IPAddress local_IP(espConfig->wifiCfg.ips[0],espConfig->wifiCfg.ips[1],espConfig->wifiCfg.ips[2],espConfig->wifiCfg.ips[3]);
     IPAddress gateway(espConfig->wifiCfg.ips[0],espConfig->wifiCfg.ips[1],espConfig->wifiCfg.ips[2],1);
     IPAddress subnet(255,255,255,0);
-    WiFi.mode(WIFI_AP);   
-    WiFi.softAP(espConfig->progCfg.name, "1234567890");
+    WiFi.setHostname(NAME);
+    WiFi.mode(WIFI_AP_STA);   
+    WiFi.softAP(NAME, "1234567890");
     delay(100);
     WiFi.softAPConfig(local_IP, local_IP, subnet);
+    startMonitor();
     return 3;
 }
 
@@ -52,10 +54,34 @@ void ESPWifi::taskHandler(void *param){
 
 void ESPWifi::continuousLoop(){
     while (true){
-        if (!WiFi.isConnected()){
-           connect();
+        switch(espConfig->wifiCfg.state){
+            case 0:
+                break;
+            case 1:
+                if (!WiFi.isConnected()){
+                    connect();
+                }
+                break;
+            case 2:
+                break;
+            case 3:
+                if(espConfig->wifiCfg.apMode==0){
+                    // scanNetworks();
+                }    
+            // scanNetworks();
+                break;
+            default:
+                break;
         }
-    vTaskDelay(1000/portTICK_PERIOD_MS);
+        
+        vTaskDelay(5000/portTICK_PERIOD_MS);
     }
     
+}
+
+void ESPWifi::scanNetworks(){
+    int numNetworks = WiFi.scanNetworks();
+    for (int i = 0; i < numNetworks; i++){
+        Serial.println(WiFi.SSID(i));
+    }
 }
