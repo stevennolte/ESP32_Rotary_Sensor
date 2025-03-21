@@ -367,6 +367,14 @@ void setup(){
           Serial.println("getting settings file");
           request->send(LittleFS, "/settings.html");
         });
+        server.on("/index.html", HTTP_GET, [](AsyncWebServerRequest *request){
+          Serial.println("getting index file");
+          request->send(LittleFS, "/index.html");
+        });
+        server.on("/controls.html", HTTP_GET, [](AsyncWebServerRequest *request){
+          Serial.println("getting controls file");
+          request->send(LittleFS, "/controls.html");
+        });
         // Route to get debug variables as JSON
         server.on("/getDebugVars", HTTP_GET, handleDebugVars);
         // Route to list files as JSON
