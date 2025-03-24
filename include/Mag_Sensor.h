@@ -5,6 +5,7 @@
 #include "SparkFun_TMAG5273_Arduino_Library.h"
 #include "Wire.h"
 #include "ESPconfig.h"
+#include "math.h"
 
 
 

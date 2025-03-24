@@ -44,6 +44,7 @@ public:
             uint8_t confRes;
             uint8_t magState;
             uint8_t dacState;
+            
             ProgramConfig(){}
     };
     ProgramConfig progCfg;
@@ -54,6 +55,7 @@ public:
             uint8_t tmagState;
             uint8_t dacState;
             uint8_t steerDriverState;
+            uint32_t debugTimestamp;
             ProgramData(){}
     };
     ProgramData progData;
@@ -82,11 +84,14 @@ public:
 
     class WasData {
         public:
+            uint16_t udpFreq = 100;
+            uint32_t udpTimestamp;
             uint8_t state;
             uint8_t mode;
             uint16_t setPoint;
             uint16_t angle;   // Angle in degrees x 100
             uint16_t sigReading;
+            float sensorAngle;
             float x;
             float y;
             float z;

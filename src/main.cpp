@@ -38,13 +38,19 @@ auto& progCfg = espConfig.progCfg;
 auto& progState = espConfig.progData.state;
 auto& wifiCfg = espConfig.wifiCfg;
 
+uint8_t conversionAverage = TMAG5273_X32_CONVERSION;
+uint8_t magneticChannel = TMAG5273_YXY_ENABLE;
+uint8_t angleCalculation = TMAG5273_XY_ANGLE_CALCULATION;
+
 bool I2Csetup(){
   // Start Wire setup
   if(!Wire.setPins(espConfig.gpioDefs.SDA_PIN, espConfig.gpioDefs.SCL_PIN)){
     Serial.println("Wire failed to set pins");
     return false;
   }
-  
+  if(!Wire.setClock(100000)){
+    Serial.println("Failed to set wire clock");
+  }
   if(!Wire.begin()){
     Serial.println("Wire failed to begin");
     return false;
@@ -239,6 +245,7 @@ void updateDebugVars() {
   debugVars.push_back("--Y: " + String(espConfig.wasData.y));
   debugVars.push_back("--Z: " + String(espConfig.wasData.z));
   debugVars.push_back("--T: " + String(espConfig.wasData.t));
+  debugVars.push_back("--Angle: " + String(espConfig.wasData.sensorAngle));
   debugVars.push_back("Sig Readings:");
   debugVars.push_back("--Value: " + String(espConfig.wasData.sigReading));
 
@@ -356,6 +363,7 @@ void setup(){
   // Start Wifi AP and Webserver for diagnostics
   // espConfig.wifiCfg.state = espWifi.makeAP();
   wifiCfg.state = espWifi.connect();
+  espUdp.begin();
   Serial.println("Wifi State: " + String(espConfig.wifiCfg.state));
   #pragma region Server Setup
         // Serve the main HTML page
@@ -405,6 +413,12 @@ void setup(){
     }
   }
   tmag5273.begin(espConfig.i2cDefs.TMAG_ADDRESS, Wire);
+  tmag5273.setConvAvg(conversionAverage);
+  tmag5273.setTemperatureEn(true);
+  // tmag5273.setMagneticChannel(magneticChannel);
+  // tmag5273.setReadMode(TMAG5273_I2C_MODE_1BYTE_16BIT);
+  // tmag5273.setAngleEn(angleCalculation);
+  
   mcp4725.begin();
   magSensor.startTask();
   sigGen.startTask();
@@ -431,7 +445,14 @@ void debugPrint(){
 void loop(){
   
   // please note that the value of status should be checked and properly handler
-  
-  delay(1000);
-  debugPrint();
+  if (millis()-espConfig.progData.debugTimestamp > 1000){
+    espConfig.progData.debugTimestamp = millis();
+    debugPrint();
+  }
+  if (millis()-espConfig.wasData.udpTimestamp > espConfig.wasData.udpFreq){
+    espConfig.wasData.udpTimestamp = millis();
+    espUdp.sendSteerData();
+  }
+  delay(3);
+
 }

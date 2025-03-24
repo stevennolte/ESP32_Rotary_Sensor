@@ -33,14 +33,21 @@ void Mag_Sensor::continuousLoop(){
         vTaskDelay(10);
         if(_sensor->getMagneticChannel() != 0) 
         {
-            _sensor->setTemperatureEn(true);
+            
 
             // Apply low-pass filter to the sensor data
-            espConfig->wasData.x = alpha * _sensor->getXData() + (1 - alpha) * espConfig->wasData.x;
-            espConfig->wasData.y = alpha * _sensor->getYData() + (1 - alpha) * espConfig->wasData.y;
-            espConfig->wasData.z = alpha * _sensor->getZData() + (1 - alpha) * espConfig->wasData.z;
-            espConfig->wasData.t = alpha * _sensor->getTemp() + (1 - alpha) * espConfig->wasData.t;
-
+            // espConfig->wasData.x = alpha * _sensor->getXData() + (1 - alpha) * espConfig->wasData.x;
+            // espConfig->wasData.y = alpha * _sensor->getYData() + (1 - alpha) * espConfig->wasData.y;
+            // espConfig->wasData.z = alpha * _sensor->getZData() + (1 - alpha) * espConfig->wasData.z;
+            // espConfig->wasData.t = alpha * _sensor->getTemp() + (1 - alpha) * espConfig->wasData.t;
+            espConfig->wasData.x = _sensor->getXData();
+            espConfig->wasData.y = _sensor->getYData();
+            espConfig->wasData.z = _sensor->getZData();
+            espConfig->wasData.t = _sensor->getTemp();
+            espConfig->wasData.sensorAngle = (alpha * (atan2(espConfig->wasData.y, espConfig->wasData.x) * 180 / PI)) + ((1 - alpha) * espConfig->wasData.sensorAngle);
+            
+            // espConfig->wasData.sensorAngle = alpha * _sensor->getAngleResult() + (1 - alpha) * espConfig->wasData.sensorAngle;
+            
             // Serial.print("(");
             // Serial.print(espConfig->wasData.x);
             // Serial.print(", ");

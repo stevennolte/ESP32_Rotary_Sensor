@@ -17,7 +17,9 @@ class ESPudp{
         void begin();
         void sendUDP();
         ESPudp(ESPconfig* vars);
+        void sendSteerData();
     private:
+        
         AsyncUDP udp;
         ESPconfig* espConfig;
        
